@@ -27,7 +27,7 @@ func main() {
 
 		fmt.Println("-------------------------------Headers-")
 		for k, v := range r.Header {
-			fmt.Printf("%s: %+v\n", k, v)
+			fmt.Printf("%s\t: %+v\n", k, v)
 		}
 
 		fmt.Println("-------------------------------Body-")
@@ -36,11 +36,13 @@ func main() {
 			log.Fatal("error reading body: ", err)
 		}
 		r.Body.Close()
-		var b bytes.Buffer
-		if err := json.Indent(&b, body, "", "\t"); err != nil {
-			log.Fatal("error marshaling body: ", err)
+		if len(body) != 0 {
+			var b bytes.Buffer
+			if err := json.Indent(&b, body, "", "\t"); err != nil {
+				log.Fatal("error marshaling body: ", err)
+			}
+			fmt.Println(b.String())
 		}
-		fmt.Println(b.String())
 
 		fmt.Println("-------------------------------FormValues-")
 		if err := r.ParseForm(); err != nil {
@@ -75,3 +77,46 @@ func main() {
 		log.Fatal("error starting server: ", err)
 	}
 }
+
+// var (
+// 	count int
+// 	start int
+// 	max int = 1
+// )
+// func main() {
+// 	// read file line by line
+// 	file, err := os.Open("data.txt")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	defer file.Close()
+
+// 	scanner := bufio.NewScanner(file)
+
+// 	// Inrease the buffer capacity if necessary
+// 	const maxCapacity = 10_000 * 1024 // 20GB == 20_000*1024
+// 	buf := make([]byte, maxCapacity)
+// 	scanner.Buffer(buf, maxCapacity)
+
+// 	// optionally, resize scanner's capacity for lines over 64K, see next example
+// 	for scanner.Scan() {
+// 		clg := scanner.Text()
+// 		fmt.Println(clg)
+// 		count ++
+// 		if count >= start && count <= max {
+// 			OpenInBrowser(clg)
+// 		}
+// 	}
+
+// 	if err := scanner.Err(); err != nil {
+// 		log.Fatal(err)
+// 	}
+// }
+
+// func OpenInBrowser(college string) {
+// 	// run a command in terminal
+// 	cmd := exec.Command(college)
+// 	if err := cmd.Run(); err != nil {
+// 		log.Fatal(err)
+// 	}
+// }
